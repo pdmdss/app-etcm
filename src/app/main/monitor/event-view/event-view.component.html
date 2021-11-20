@@ -1,0 +1,45 @@
+<div class="earthquake-main-data">
+    <div class="event-data">
+        <ng-container *ngIf="nowEventData">
+            <div class="event-data-head intensity-s{{nowEventData.maxInt}}">
+                <h2>地震情報</h2>
+                <br>
+                <div class="event-time">
+                    {{(nowEventData.originTime || nowEventData.arrivalTime) | date:'MM月dd日HH時mm分'}} 頃発生
+                </div>
+                <div class="event-maxint">
+                    最大震度&nbsp;&nbsp;<span>{{nowEventData.maxIntText || '-'}}</span>
+                </div>
+                <br>
+                <div class="event-region">
+                    震源&nbsp;&nbsp;{{nowEventData.hypocenterName}}
+                </div>
+                <div class="event-depth">
+                    深さ&nbsp;&nbsp;{{nowEventData.depth || '不明'}}
+                </div>
+                <div class="event-magnitude">
+                    規模&nbsp;&nbsp;{{nowEventData.magnitude || '不明'}}
+                </div>
+            </div>
+            <div class="event-data-body">
+                <ng-container *ngFor="let row of (nowEventData?.intensity?.city || nowEventData.intensity?.area || [])">
+                    <div class="event-data-int" *ngIf="row[1].length > 0">震度{{row[0]}}: {{row[1].join(' ')}}</div>
+                </ng-container>
+            </div>
+            <div class="event-data-footer">
+                <div class="earthquake-comment">
+                    <p *ngIf="nowEventData.comment?.var">{{nowEventData?.comment?.var}}</p>
+                    <p *ngIf="nowEventData.comment?.forecast">{{nowEventData?.comment?.forecast}}</p>
+                    <p *ngIf="nowEventData.comment?.free">{{nowEventData?.comment?.free}}</p>
+                </div>
+                <div class="event-data-meta">
+                    <p>{{nowEventData.author}}: {{nowEventData.dateTime | date: 'YYYY/MM/dd HH:mm:ss'}}</p>
+                    <p>{{nowEventData.eventId}}</p>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <div class="event-map">
+        <app-map></app-map>
+    </div>
+</div>

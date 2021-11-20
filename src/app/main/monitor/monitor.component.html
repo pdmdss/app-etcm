@@ -1,0 +1,31 @@
+<div class="monitor">
+    <div class="earthquake">
+        <div class="event-list">
+            <ul>
+                <li *ngFor="let row of eventList()"
+                    (click)="toEvent(row.eventId)"
+                    class="intensity-s{{row.maxInt}}"
+                    [class.view-event]="row.eventId === viewEventId">
+                    <div class="event-time">{{(row.originTime || row.arrivalTime)| date:'MM/dd HH:mm'}}</div>
+                    <div class="event-maxint">最大震度 <span>{{row.maxIntText || '-'}}</span></div>
+                    <div class="event-region">{{row.hypocenterName || '震源不明'}} {{row.depth}}</div>
+                    <div class="event-magnitude">{{row.magnitude || 'M不明'}}</div>
+                </li>
+            </ul>
+        </div>
+        <div class="event-data">
+            <app-event-view [eventId]="selectEvent()"></app-event-view>
+        </div>
+    </div>
+    <div class="settings">
+        <div class="websocket">
+            <div>WebSocket:</div>
+            <div class="websocket-start" *ngIf="webSocketIsStartingOK()" (click)="webSocketStart()">Open</div>
+            <div class="websocket-status {{webSocketStatus()}}">{{webSocketStatus()}}</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="package">
+            <span>{{package.author}} / {{package.name}} v{{package.version}}</span>
+        </div>
+    </div>
+</div>

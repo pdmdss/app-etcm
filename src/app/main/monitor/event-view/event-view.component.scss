@@ -1,0 +1,109 @@
+@import "../intensity-color";
+
+.earthquake-main-data {
+    display: flex;
+    height: 100%;
+}
+
+
+.event-data {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 300px;
+    max-width: 300px;
+}
+
+.event-data-head {
+    min-height: 238px;
+    padding: 5px 0;
+
+h2 {
+    text-align: center;
+}
+
+> div {
+    font-size: 18px;
+    margin: 0 25px;
+}
+
+.event-maxint span {
+    font-size: 24px;
+}
+}
+
+.event-data-body {
+    overflow-x: unset;
+    overflow-y: scroll;
+    flex: 1;
+}
+
+.event-data-int {
+    font-size: 12px;
+    padding: 3px 5px;
+    white-space: pre-wrap;
+    word-break: keep-all;
+}
+
+
+.event-data-footer {
+    min-height: 216px;
+}
+
+.earthquake-comment {
+    overflow-x: unset;
+    overflow-y: scroll;
+    height: 150px;
+    border-top: 1px solid #cdcdcd;
+    border-bottom: 1px solid #cdcdcd;
+
+p {
+    font-size: 11px;
+    padding: 5px;
+    white-space: pre-line;
+}
+}
+
+.event-list {
+    overflow-x: unset;
+    overflow-y: scroll;
+    height: 75px;
+    border-top: 1px solid #cdcdcd;
+    border-bottom: 1px solid #cdcdcd;
+
+p {
+    font-size: 12px;
+}
+}
+
+.event-data-meta {
+    font-size: 12px;
+    padding: 5px;
+}
+
+
+.event-map {
+    position: relative;
+    flex: 1;
+}
+
+.earthquake-tsunami-forecast {
+    position: absolute;
+    z-index: 500000;
+    right: 0;
+    bottom: 30px;
+    left: 0;
+    text-align: center;
+
+
+p {
+    font-size: 20px;
+    width: fit-content;
+    margin: auto;
+    padding: 5px 25px;
+    color: #e7e7e7;
+    border: 2px solid #f8f8f8;
+    border-radius: 5px;
+    background-color: #181719;
+}
+}

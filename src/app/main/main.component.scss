@@ -1,0 +1,46 @@
+
+.full-window {
+
+    position: relative;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+
+    background-color: #677a98;
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+
+    a:any-link {
+        color: #ffffff;
+    }
+}
+
+.status-message {
+    font-size: 20px;
+}
+
+.init {
+    width: fit-content;
+    margin: 5px auto;
+    padding: 5px;
+    cursor: pointer;
+    border: 1px solid #063e7c;
+    border-radius: 5px;
+    background-color: #1c528d;
+
+}
+
+.footer {
+    font-size: 14px;
+    margin: auto auto 5px auto;
+    text-align: center;
+    color: #ffffff;
+}
