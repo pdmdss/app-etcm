@@ -21,7 +21,7 @@ export class MainComponent implements OnInit {
     this.status = 'loading';
     this.oauth2.refreshTokenCheck()
       .then(is => is ? this.contractCheck() : null)
-      .then(() => this.status = undefined);
+      .finally(() => this.status = undefined);
   }
 
   async init() {
