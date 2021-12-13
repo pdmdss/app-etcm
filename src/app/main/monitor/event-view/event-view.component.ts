@@ -115,7 +115,6 @@ export class EventViewComponent implements OnInit {
     const coordinate = eventData.coordinate;
 
     if (coordinate && coordinate.latitude && coordinate.longitude) {
-      0;
       this.mapClearLayerEarthquake();
 
       const latitude = coordinate.latitude;
