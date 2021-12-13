@@ -89,7 +89,11 @@ export class MonitorComponent implements OnInit {
           maxInt: 'intensity' in data.body ? data.body.intensity?.maxInt : null
         });
 
-        this.viewSubject.next(data);
+        if (data._schema.type === 'earthquake-information') {
+          this.viewSubject.next(data);
+        } else {
+          this.toEvent(data.eventId);
+        }
       });
   }
 
