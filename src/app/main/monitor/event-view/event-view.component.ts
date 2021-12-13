@@ -45,7 +45,8 @@ type EventObjectExtend = EventObject & {
   intensity?: {
     area?: [string, string[]][];
     city?: [string, string[]][]
-  }
+  };
+  bounds?: LatLngBounds
 };
 
 @Component({
@@ -110,7 +111,7 @@ export class EventViewComponent implements OnInit {
 
     const intensity = 'intensity' in data.body ? data.body.intensity : null;
 
-    const bounds = latLngBounds([]);
+    const bounds = eventData.bounds ??= latLngBounds([]);
 
     const coordinate = eventData.coordinate;
 
