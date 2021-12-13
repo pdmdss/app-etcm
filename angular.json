@@ -30,7 +30,10 @@
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [],
-            "baseHref": "/etcm/"
+            "baseHref": "/etcm/",
+            "allowedCommonJsDependencies": [
+              "@dmdata/oauth2-client"
+            ]
           },
           "configurations": {
             "production": {

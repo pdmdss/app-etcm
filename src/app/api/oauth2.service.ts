@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { fromPromise } from 'rxjs/internal-compatibility';
 
-import { OAuth2Code } from '@dmdata/oauth2-clinet';
+import { OAuth2Code } from '@dmdata/oauth2-client';
 
 import { Settings } from '@/db/settings';
 
