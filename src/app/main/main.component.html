@@ -1,6 +1,6 @@
 <div class="full-window" *ngIf="initMode || status !== 'ok'">
     <div class="content">
-        <div class="status-message" [ngSwitch]="status">
+        <div class="status-message" [ngSwitch]="status" *ngIf="!initMode">
             <div *ngSwitchCase="'no-contract'">
                 <p> 現在、地震津波関連の契約がないため情報が表示できません。</p>
             </div>

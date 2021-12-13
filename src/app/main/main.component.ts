@@ -11,7 +11,7 @@ import pack from '@/package';
 })
 export class MainComponent implements OnInit {
   package = pack;
-  initMode = true;
+  initMode = false;
   status?: 'ok' | 'loading' | 'no-contract' | 'no-auth';
 
   constructor(private api: ApiService, private oauth2: Oauth2Service) {
@@ -20,7 +20,7 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {
     this.status = 'loading';
     this.oauth2.refreshTokenCheck()
-      .then(is => is ? this.contractCheck() : null)
+      .then(is => is ? this.contractCheck() : this.initMode = true)
       .finally(() => this.status = undefined);
   }
 
