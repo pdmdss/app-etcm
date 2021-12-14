@@ -91,7 +91,7 @@ export class EventViewComponent implements OnInit {
     const title = data.title;
     const dateTime = data.pressDateTime;
     const eventId = data.eventId;
-    const eventData: EventObjectExtend | undefined = this.nowEventData = earthquakeEvents.get(eventId);
+    const eventData: EventObjectExtend | undefined = earthquakeEvents.get(eventId);
 
     if (!eventId || !dateTime || !eventData) {
       return;
@@ -104,8 +104,8 @@ export class EventViewComponent implements OnInit {
 
     this.nowEventData = eventData;
 
-    this.nowEventData.author = data.editorialOffice;
-    this.nowEventData.dateTime = dateTime;
+    eventData.author = data.editorialOffice;
+    eventData.dateTime = dateTime;
 
     this.comment(data.body.comments, eventData);
 
