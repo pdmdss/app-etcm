@@ -1,6 +1,6 @@
 {
   "name": "app-etcm",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "author": "soshi1822",
   "scripts": {
     "ng": "ng",
