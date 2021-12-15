@@ -43,7 +43,7 @@ export class MsgUpdateService {
 
     return this.telegramSubject.asObservable()
       .pipe(
-        distinct(row => row._originId)
+        distinct(row => row._originalId)
       );
   }
 

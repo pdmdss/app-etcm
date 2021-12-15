@@ -34,7 +34,7 @@
     "@angular-devkit/build-angular": "~12.2.7",
     "@angular/cli": "~12.2.7",
     "@angular/compiler-cli": "~12.2.0",
-    "@dmdata/telegram-json-types": "^1.0.0",
+    "@dmdata/telegram-json-types": "^1.0.4",
     "@pdmdss/api-types": "github:pdmdss/api-types",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
