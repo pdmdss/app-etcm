@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { interval, of, Subject } from 'rxjs';
-import { concatMap, filter, share, skip, tap } from 'rxjs/operators';
+import { concatMap, distinct, filter, share, skip, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 // @ts-ignore
 import { Zlib } from 'zlibjs/bin/gunzip.min.js';
@@ -41,7 +41,10 @@ export class MsgUpdateService {
       this.intervalStart();
     }
 
-    return this.telegramSubject.asObservable();
+    return this.telegramSubject.asObservable()
+      .pipe(
+        distinct(row => row._originId)
+      );
   }
 
   webSocketStart() {
