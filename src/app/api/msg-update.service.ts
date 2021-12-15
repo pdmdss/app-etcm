@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '@/api/api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { interval, of, Subject } from 'rxjs';
-import { concatMap, delay, filter, share, skip, tap } from 'rxjs/operators';
+import { concatMap, filter, share, skip, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebSocketV2, WebSocketV2Data } from '@pdmdss/api-types';
 // @ts-ignore
 import { Zlib } from 'zlibjs/bin/gunzip.min.js';
+
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
-import { HttpErrorResponse } from '@angular/common/http';
+import { WebSocketV2, WebSocketV2Data } from '@pdmdss/api-types';
+
+import { ApiService } from '@/api/api.service';
 
 @Injectable({
   providedIn: 'root'
