@@ -23,7 +23,8 @@
         flex-direction: row;
         margin: 0 5px;
 
-        .websocket-start {
+        .websocket-start,
+        .websocket-close {
             line-height: normal;
             margin: auto 2px;
             padding: 0 2px;

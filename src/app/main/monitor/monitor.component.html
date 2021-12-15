@@ -22,6 +22,7 @@
             <div>WebSocket:</div>
             <div class="websocket-start" *ngIf="webSocketIsStartingOK()" (click)="webSocketStart()">Open</div>
             <div class="websocket-status {{webSocketStatus()}}">{{webSocketStatus()}}</div>
+            <div class="websocket-close" *ngIf="webSocketStatus() === 'open'" (click)="webSocketClose()">to Close</div>
         </div>
         <div class="spacer"></div>
         <div class="package">

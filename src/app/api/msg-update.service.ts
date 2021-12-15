@@ -56,6 +56,12 @@ export class MsgUpdateService {
       .subscribe(data => this.telegramSubject?.next(data));
   }
 
+  webSocketClose() {
+    if (this.webSocketStatus === 'open') {
+      this.webSocketSubject?.complete();
+    }
+  }
+
   private intervalStart() {
     interval(2000)
       .pipe(

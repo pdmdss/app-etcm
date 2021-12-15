@@ -39,6 +39,11 @@ export class MonitorComponent implements OnInit {
     this.msg.webSocketStart();
   }
 
+
+  webSocketClose() {
+    this.msg.webSocketClose();
+  }
+
   ngOnInit(): void {
     const list = this.api.gdEarthquakeList({ limit: 100 })
       .pipe(concatMap(row => of(...row.items.reverse())));
