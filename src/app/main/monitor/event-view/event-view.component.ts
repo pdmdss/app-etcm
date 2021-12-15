@@ -34,7 +34,7 @@ for (let i = 1; i < 10; i++) {
   }));
 }
 
-const intensityInitMap: [string, string[]][] = [
+const intensityInitMap: () => [string, string[]][] = () => [
   [
     '1',
     []
@@ -181,7 +181,7 @@ export class EventViewComponent implements OnInit {
       if (obsStations && obsStations.length > 0) {
         this.mapClearPointEarthquake();
 
-        const cityInt = new Map<string, string[]>(intensityInitMap);
+        const cityInt = new Map<string, string[]>(intensityInitMap());
 
         obsStations.forEach(obsStation => this.intensity(obsStation, bounds, cityInt));
 
@@ -189,7 +189,7 @@ export class EventViewComponent implements OnInit {
       } else if (obsAreas && obsAreas.length > 0) {
         this.mapClearPointEarthquake();
 
-        const areaInt = new Map<string, string[]>(intensityInitMap);
+        const areaInt = new Map<string, string[]>(intensityInitMap());
 
         obsAreas.forEach(obsArea => this.intensity(obsArea, bounds, areaInt));
 
