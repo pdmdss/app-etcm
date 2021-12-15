@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { concatMap, last } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
+import { Howl } from 'howler';
+
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
 
 import { ApiService } from '@/api/api.service';
@@ -8,6 +10,7 @@ import { MsgUpdateService } from '@/api/msg-update.service';
 import { earthquakeEventAdd, earthquakeEvents, EventObject } from '@/main/monitor/event';
 
 import pack from '@/package';
+import { Settings } from '@/db/settings';
 
 @Component({
   selector: 'app-monitor',
@@ -17,8 +20,10 @@ import pack from '@/package';
 export class MonitorComponent implements OnInit {
   package = pack;
   viewEventId?: string;
+  soundPlay = false;
   private eventIdSelectSubject = new Subject<string>();
   private viewSubject = new Subject<EarthquakeInformation.Main>();
+  private sound = new Howl({ src: 'assets/sound/sound.mp3' });
 
   constructor(private api: ApiService, private msg: MsgUpdateService) {
   }
@@ -83,6 +88,10 @@ export class MonitorComponent implements OnInit {
       .subscribe(data => {
         const earthquake = 'earthquake' in data.body ? data.body.earthquake : null;
 
+        if (this.soundPlay) {
+          this.sound.play();
+        }
+
         earthquakeEventAdd({
           eventId: data.eventId,
           arrivalTime: earthquake?.arrivalTime ?? data.targetDateTime,
@@ -100,6 +109,8 @@ export class MonitorComponent implements OnInit {
           this.toEvent(data.eventId);
         }
       });
+
+    this.sound.on('unlock', () => this.soundUnlock());
   }
 
 
@@ -117,5 +128,22 @@ export class MonitorComponent implements OnInit {
 
   selectEvent() {
     return this.viewSubject.asObservable();
+  }
+
+  async soundPlaySetting(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const is = target.checked;
+
+    this.soundPlay = target.checked;
+    await Settings.set('soundPlayAutoActivation', is);
+  }
+
+  private async soundUnlock() {
+    console.log(this.sound.state());
+    const spAa = await Settings.get('soundPlayAutoActivation');
+
+    if (this.sound.state() === 'loaded') {
+      this.soundPlay = spAa ?? false;
+    }
   }
 }

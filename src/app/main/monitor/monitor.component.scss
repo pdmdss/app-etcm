@@ -64,6 +64,15 @@
         }
     }
 
+    .sound {
+        margin: 0 5px;
+
+        input {
+            margin: 0 2px;
+            vertical-align: middle;
+        }
+    }
+
     .spacer {
         flex-grow: 1;
     }

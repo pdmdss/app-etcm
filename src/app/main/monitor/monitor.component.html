@@ -24,6 +24,12 @@
             <div class="websocket-status {{webSocketStatus()}}">{{webSocketStatus()}}</div>
             <div class="websocket-close" *ngIf="webSocketStatus() === 'open'" (click)="webSocketClose()">to Close</div>
         </div>
+        <div class="sound">
+            <label>
+                <span>音声通知:</span>
+                <input type="checkbox" [checked]="soundPlay" (input)="soundPlaySetting($event)">
+            </label>
+        </div>
         <div class="spacer"></div>
         <div class="package">
             <span>
