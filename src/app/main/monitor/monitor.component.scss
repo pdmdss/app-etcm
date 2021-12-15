@@ -70,6 +70,18 @@
     .package {
         font-size: 12px;
         margin: 0 5px;
+
+        span {
+            margin: 0 5px;
+        }
+
+        .logo-github {
+            height: 24px;
+            padding: 2px;
+            vertical-align: middle;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
     }
 }
 
