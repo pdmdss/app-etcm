@@ -7,7 +7,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { Zlib } from 'zlibjs/bin/gunzip.min.js';
 
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
-import { WebSocketV2, WebSocketV2Data } from '@pdmdss/api-types';
+import { WebSocketV2, WebSocketV2Data } from '@dmdata/api-types';
 
 import { ApiService } from '@/api/api.service';
 

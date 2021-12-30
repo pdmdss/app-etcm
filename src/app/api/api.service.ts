@@ -8,7 +8,7 @@ import {
   APIV2GDEarthquakeList,
   APIV2SocketStart,
   APIV2TelegramList
-} from '@pdmdss/api-types';
+} from '@dmdata/api-types';
 import { RequestService } from './request.service';
 
 
@@ -63,7 +63,7 @@ export class ApiService extends RequestService {
     }, undefined, 'json');
   }
 
-  telegramList(params: APIV2TelegramList.QueryParams = {}) {
+  telegramList(params: { cursorToken: string | undefined; formatMode: string; type: string }) {
     return this.get<APIV2TelegramList.ResponseOk>(endpoints.telegram.list, query2string(params));
   }
 
