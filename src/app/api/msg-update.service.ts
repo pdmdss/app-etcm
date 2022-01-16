@@ -112,6 +112,7 @@ export class MsgUpdateService {
             this.webSocketSubject?.next({ type: 'pong', pingId: res.pingId });
           }
           if (res.type === 'start') {
+            this.webSocketSubject?.next({ type: 'ping' });
             this.webSocketStatus = 'open';
           }
         }),
