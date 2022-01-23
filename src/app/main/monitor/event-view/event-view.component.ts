@@ -6,7 +6,6 @@ import { EarthquakeInformation } from '@dmdata/telegram-json-types';
 import { StationService } from '@/api/station.service';
 import { MapService } from '@/main/monitor/map/map.service';
 import { earthquakeEvents, EventObject } from '@/main/monitor/event';
-import { Intensity } from '@dmdata/telegram-json-types/types/schema/earthquake-information';
 
 const seismicIcon = new Map<number, Icon>();
 const hypocenterIcon = icon({
@@ -224,8 +223,8 @@ export class EventViewComponent implements OnInit {
   private intensity(item: {
                       name: string;
                       code: string;
-                      int?: Intensity | '!5-';
-                      maxInt?: Intensity | '!5-';
+                      int?: EarthquakeInformation.Intensity | '!5-';
+                      maxInt?: EarthquakeInformation.Intensity | '!5-';
                       revise?: '上方修正' | '追加';
                       condition?: '震度５弱以上未入電';
                     },
