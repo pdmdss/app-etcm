@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 import { OAuth2Code } from '@dmdata/oauth2-client';
 
 import { Settings } from '@/db/settings';
 
 import { environment } from '../../environments/environment';
-import { interval, Observable } from 'rxjs';
+import { from, interval, Observable } from 'rxjs';
 import { concatMap, filter, take, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -39,12 +38,12 @@ export class Oauth2Service {
         );
     }
 
-    return fromPromise(this.oauth2.getAuthorization())
+    return from(this.oauth2.getAuthorization())
       .pipe(tap(() => !this.refreshToken && this.refreshTokenSave()));
   }
 
   getDPoPProofJWT(method: string, uri: string) {
-    return fromPromise(this.oauth2?.getDPoPProofJWT(method, uri) ?? Promise.resolve(null));
+    return from(this.oauth2?.getDPoPProofJWT(method, uri) ?? Promise.resolve(null));
   }
 
   async refreshTokenCheck() {

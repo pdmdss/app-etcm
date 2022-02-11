@@ -75,9 +75,9 @@ export class RequestService {
       'application/x-www-form-urlencoded' :
       'application/json';
 
-    return this.oauth2
-      .getAuthorizationRxjs()
-      .pipe(
+    console.log(url);
+    return of([])
+      .pipe(concatMap(() => this.oauth2.getAuthorizationRxjs()),
         concatMap(token =>
           this.oauth2.getDPoPProofJWT(method, url)
             .pipe(concatMap(dpop =>
