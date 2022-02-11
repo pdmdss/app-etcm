@@ -43,6 +43,10 @@ export class Oauth2Service {
       .pipe(tap(() => !this.refreshToken && this.refreshTokenSave()));
   }
 
+  getDPoPProofJWT(method: string, uri: string) {
+    return fromPromise(this.oauth2?.getDPoPProofJWT(method, uri) ?? Promise.resolve(null));
+  }
+
   async refreshTokenCheck() {
     return !!await Settings.get('oauthRefreshToken');
   }
@@ -74,7 +78,8 @@ export class Oauth2Service {
         redirectUri: environment.OAUTH_REDIRECT_URI
       },
       pkce: true,
-      refreshToken
+      refreshToken,
+      dpop: 'ES384'
     });
   }
 }

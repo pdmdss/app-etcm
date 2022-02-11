@@ -59,12 +59,23 @@ export class StationService {
     this.oauth2.getAuthorizationRxjs()
       .pipe(
         concatMap(token =>
+          this.oauth2.getDPoPProofJWT('GET', endpoint.station)
+            .pipe(concatMap(dpop =>
+              of([
+                  token,
+                  dpop
+                ] as [string, string | null]
+              )
+            ))
+        ),
+        concatMap(([token, dpop]) =>
           this.http.get<ApiParametersEarthQuakeStation>(
             endpoint.station,
             {
               responseType: 'json',
               headers: {
-                authorization: token
+                authorization: token,
+                ...(dpop ? { dpop } : {})
               }
             }
           ))

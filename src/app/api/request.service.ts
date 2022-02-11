@@ -77,14 +77,30 @@ export class RequestService {
 
     return this.oauth2
       .getAuthorizationRxjs()
-      .pipe(concatMap(token =>
+      .pipe(
+        concatMap(token =>
+          this.oauth2.getDPoPProofJWT(method, url)
+            .pipe(concatMap(dpop =>
+              of([
+                  token,
+                  dpop
+                ] as [string, string | null]
+              )
+            ))
+        ),
+        concatMap(([token, dpop]) =>
           this.http
             .request<T>(method, url, {
               params: { ...params },
               body: payload,
               observe: 'response',
               responseType: 'json',
-              headers: { 'content-type': contentTypeHeader, authorization: token }
+              headers: {
+                'content-type':
+                contentTypeHeader,
+                authorization: token,
+                ...(dpop ? { dpop } : {})
+              }
             })
         )
       );
