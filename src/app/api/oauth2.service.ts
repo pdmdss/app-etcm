@@ -39,7 +39,7 @@ export class Oauth2Service {
     }
 
     return from(this.oauth2.getAuthorization())
-      .pipe(tap(() => !this.refreshToken && this.refreshTokenSave()));
+      .pipe(tap(() => !this.refreshToken && this.oauthSettingSave()));
   }
 
   getDPoPProofJWT(method: string, uri: string) {
@@ -50,18 +50,25 @@ export class Oauth2Service {
     return !!await Settings.get('oauthRefreshToken');
   }
 
-  private async refreshTokenSave() {
+  private async oauthSettingSave() {
     const refreshToken = this.refreshToken = this.oauth2?.getRefreshToken();
     refreshToken && await Settings.set('oauthRefreshToken', refreshToken);
+
+    console.log(this.oauth2);
+    const oauthDPoPKeypair = await this.oauth2?.getDPoPKeypair();
+    oauthDPoPKeypair && await Settings.set('oauthDPoPKeypair', oauthDPoPKeypair);
   }
 
   private async init() {
     const refreshToken = this.refreshToken = await Settings.get('oauthRefreshToken');
 
+    const oauthDPoPKeypair = await Settings.get('oauthDPoPKeypair');
+
     this.oauth2 = new OAuth2Code({
       endpoint: {
         authorization: 'https://manager.dmdata.jp/account/oauth2/v1/auth',
-        token: 'https://manager.dmdata.jp/account/oauth2/v1/token'
+        token: 'https://manager.dmdata.jp/account/oauth2/v1/token',
+        introspect: 'https://manager.dmdata.jp/account/oauth2/v1/introspect'
       },
       client: {
         id: 'CId.xyw6-lPflvaxR9CrGR-zHBfGJ_8dUmVtai_61qRSplwM',
@@ -78,7 +85,7 @@ export class Oauth2Service {
       },
       pkce: true,
       refreshToken,
-      dpop: 'ES384'
+      dpop: oauthDPoPKeypair ?? 'ES384'
     });
   }
 }
