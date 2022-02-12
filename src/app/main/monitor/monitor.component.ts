@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { concatMap, last } from 'rxjs/operators';
+import { concatMap, last, share } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { Howl } from 'howler';
 
@@ -51,7 +51,7 @@ export class MonitorComponent implements OnInit {
 
   ngOnInit(): void {
     const list = this.api.gdEarthquakeList({ limit: 100 })
-      .pipe(concatMap(row => of(...row.items.reverse())));
+      .pipe(concatMap(row => of(...row.items.reverse())), share());
 
     list.subscribe(item => earthquakeEventAdd({
       eventId: item.eventId,
