@@ -35,9 +35,9 @@ export class MainComponent implements OnInit {
   private contractCheck() {
     this.initMode = false;
     this.api.contractList()
-      .subscribe(
-        res => this.status = res.items.filter(r => r.classification === 'telegram.earthquake').length > 0 ?
-          'ok' : 'no-contract',
-        error => this.status = 'no-auth');
+      .subscribe({
+        next: res => this.status = res.items.filter(r => r.classification === 'telegram.earthquake').length > 0 ? 'ok' : 'no-contract',
+        error: error => this.status = 'no-auth'
+      });
   }
 }
