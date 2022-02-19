@@ -1,89 +1,88 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { DMDATA } from '@dmdata/sdk-js';
+import { firstValueFrom, from, Observable, of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 
-import {
-  APIV2ContractList,
-  APIV2GDEarthquakeEvent,
-  APIV2GDEarthquakeList,
-  APIV2SocketStart,
-  APIV2TelegramList
-} from '@dmdata/api-types';
-import { RequestService } from './request.service';
+import { APITypes, Components } from '@dmdata/api-types';
 
-
-const endpoints = {
-  telegram: {
-    list: 'https://api.dmdata.jp/v2/telegram',
-    data: 'https://data.api.dmdata.jp/v1/'
-  },
-  contract: 'https://api.dmdata.jp/v2/contract',
-  socket: 'https://api.dmdata.jp/v2/socket',
-  gd: {
-    earthquake: 'https://api.dmdata.jp/v2/gd/earthquake'
-  }
-};
+import { Oauth2Service } from '@/api/oauth2.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService extends RequestService {
+export class ApiService {
+  private client = new DMDATA();
+
+  constructor(private oauth2: Oauth2Service) {
+    this.client.setAuthorizationContext({
+      getAuthorization: () => firstValueFrom(this.oauth2.getAuthorizationRxjs()),
+      getDPoPProofJWT: (method: string, uri: string, nonce?: string | null) => firstValueFrom(this.oauth2.getDPoPProofJWT(method, uri, nonce))
+    });
+  }
+
   contractList() {
-    return this.get<APIV2ContractList.ResponseOk>(endpoints.contract);
+    return from(this.client.contract.list())
+      .pipe(
+        concatMap(res => of(res.data))
+      );
   }
 
 
   telegramGet(tid: string): Observable<number | string | object | Document> {
-    return this.get(`${endpoints.telegram.data}${tid}`, {}, true)
+    return from(this.client.telegramBody.get(tid))
       .pipe(
         concatMap(res => {
-          const contentType = res.headers.get('content-type');
+          const contentType = res.headers['content-type'];
 
-          if (contentType === 'application/json' && typeof res.body === 'object') {
-            return of(res.body as object);
+          if (contentType === 'application/json' && typeof res.data === 'object') {
+            return of(res.data as object);
           }
-          if (contentType === 'application/xml' && typeof res.body === 'string') {
-            return of(new DOMParser().parseFromString(res.body, 'application/xml'));
+          if (contentType === 'application/xml' && typeof res.data === 'string') {
+            return of(new DOMParser().parseFromString(res.data, 'application/xml'));
           }
-          if (res.body === null || res.status !== 200 || typeof res.body !== 'string') {
+          if (res.data === null || res.status !== 200 || typeof res.data !== 'string') {
             return of(res.status);
           }
 
-          return of(res.body);
+          return of(res.data);
         })
       );
   }
 
-  socketStart(classifications: string[], appName?: string, formatMode: 'json' | 'raw' = 'json') {
-    return this.post<APIV2SocketStart.ResponseOk>(endpoints.socket, {
+  socketStart(classifications: Components.Classification.Values[], appName?: string, formatMode: 'json' | 'raw' = 'json') {
+    return from(this.client.socket.start({
       classifications,
       appName,
       formatMode
-    }, undefined, 'json');
+    }));
   }
 
-  telegramList(params: { cursorToken: string | undefined; formatMode: string; type: string }) {
-    return this.get<APIV2TelegramList.ResponseOk>(endpoints.telegram.list, query2string(params));
+  telegramList(params: APITypes.TelegramList.QueryParams) {
+    return from(this.client.telegram.list(params))
+      .pipe(
+        concatMap(res => of(res.data))
+      );
   }
 
-  gdEarthquakeList(params: APIV2GDEarthquakeList.QueryParams = {}) {
-    return this.get<APIV2GDEarthquakeList.ResponseOk>(endpoints.gd.earthquake, query2string(params));
+  gdEarthquakeList(params: APITypes.GDEarthquakeList.QueryParams) {
+    return from(this.client.gdEarthquake.list(params))
+      .pipe(
+        concatMap(res => of(res.data))
+      );
   }
 
   gdEarthquakeEvent(eventId: string) {
-    return this.get<APIV2GDEarthquakeEvent.ResponseOk>(`${endpoints.gd.earthquake}/${eventId}`);
+    return from(this.client.gdEarthquake.event(eventId))
+      .pipe(
+        concatMap(res => of(res.data))
+      );
   }
-}
 
-
-function query2string(object: { [key: string]: unknown }) {
-  return Object.fromEntries(
-    Object.entries(object)
-      .filter(row => row[1] !== undefined)
-      .map(row => [
-        row[0],
-        `${row[1]}`
-      ])
-  );
+  parameterEarthquakeStation() {
+    return from(this.client.parameter.earthquake())
+      .pipe(
+        concatMap(res => of(res.data))
+      );
+  }
 }

@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { interval, of, Subject } from 'rxjs';
-import { concatMap, distinct, filter, share, skip, tap } from 'rxjs/operators';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { concatMap, distinct, filter, skip, tap } from 'rxjs/operators';
 // @ts-ignore
 import { Zlib } from 'zlibjs/bin/gunzip.min.js';
 
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
-import { WebSocketV2, WebSocketV2Data } from '@dmdata/api-types';
+import { APITypes } from '@dmdata/api-types';
+import { WebSocketClient } from '@dmdata/sdk-js';
 
 import { ApiService } from '@/api/api.service';
 
@@ -22,7 +21,7 @@ export class MsgUpdateService {
     'VXSE61'
   ];
   private nextPoolingToken?: string;
-  private webSocketSubject?: WebSocketSubject<WebSocketV2>;
+  private webSocketSubject?: WebSocketClient;
   private webSocketStatus: null | 'connecting' | 'open' | 'closed' | 'error' = null;
   private telegramSubject?: Subject<EarthquakeInformation.Main>;
 
@@ -61,7 +60,7 @@ export class MsgUpdateService {
 
   webSocketClose() {
     if (this.webSocketStatus === 'open') {
-      this.webSocketSubject?.complete();
+      this.webSocketSubject?.close();
     }
   }
 
@@ -93,39 +92,23 @@ export class MsgUpdateService {
   }
 
   private webSocketConnection() {
-    if (this.webSocketSubject?.isStopped === true) {
+    if (this.webSocketSubject?.readyState === WebSocketClient.OPEN) {
       return;
     }
 
     this.webSocketStatus = 'connecting';
 
-    const obs = this.api.socketStart(['telegram.earthquake'], 'ETCM', 'json')
-      .pipe(
-        concatMap((res) =>
-          this.webSocketSubject = webSocket({
-            url: res.websocket.url,
-            protocol: res.websocket.protocol
-          })
-        ),
-        tap(res => {
-          if (res.type === 'ping') {
-            this.webSocketSubject?.next({ type: 'pong', pingId: res.pingId });
-          }
-          if (res.type === 'start') {
-            this.webSocketSubject?.next({ type: 'ping' });
-            this.webSocketStatus = 'open';
-          }
-        }),
-        concatMap(res => res.type === 'data' ? of<WebSocketV2Data>(res) : of<never>()),
-        share()
-      );
+    const s = new Subject<APITypes.WebSocketV2.Event.Data>();
 
-    obs.subscribe({
-      complete: () => this.webSocketStatus = 'closed',
-      error: error => (error instanceof HttpErrorResponse || error.type === 'close') ? this.webSocketStatus = 'error' : null
-    });
+    this.api.socketStart(['telegram.earthquake'], 'ETCM', 'json')
+      .subscribe(ws => {
+        // @ts-ignore
+        this.webSocketSubject = ws.websocket;
+        ws.on('data', data => s.next(data));
+      });
 
-    return obs;
+
+    return s.asObservable();
   }
 }
 

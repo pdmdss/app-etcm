@@ -5,8 +5,8 @@ import { OAuth2Code } from '@dmdata/oauth2-client';
 import { Settings } from '@/db/settings';
 
 import { environment } from '../../environments/environment';
-import { from, interval, Observable } from 'rxjs';
-import { concatMap, filter, take, tap } from 'rxjs/operators';
+import { from, interval, Observable, take, tap } from 'rxjs';
+import { concatMap, filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -32,34 +32,25 @@ export class Oauth2Service {
     if (!this.oauth2) {
       return interval(100)
         .pipe(
+          tap(() => console.log(this.oauth2)),
           filter(() => !!this.oauth2),
           take(1),
           concatMap(() => this.getAuthorizationRxjs())
         );
     }
 
-    return from(this.oauth2.getAuthorization())
-      .pipe(tap(() => !this.refreshToken && this.oauthSettingSave()));
+    return from(this.oauth2.getAuthorization());
   }
 
-  getDPoPProofJWT(method: string, uri: string) {
-    return from(this.oauth2?.getDPoPProofJWT(method, uri) ?? Promise.resolve(null));
+  getDPoPProofJWT(method: string, uri: string, nonce?: string | null) {
+    return from(this.oauth2?.getDPoPProofJWT(method, uri, nonce) ?? Promise.resolve(null));
   }
 
   async refreshTokenCheck() {
     return !!await Settings.get('oauthRefreshToken');
   }
 
-  private async oauthSettingSave() {
-    const refreshToken = this.refreshToken = this.oauth2?.getRefreshToken();
-    refreshToken && await Settings.set('oauthRefreshToken', refreshToken);
-
-    console.log(this.oauth2);
-    const oauthDPoPKeypair = await this.oauth2?.getDPoPKeypair();
-    oauthDPoPKeypair && await Settings.set('oauthDPoPKeypair', oauthDPoPKeypair);
-  }
-
-  private async init() {
+  async init() {
     const refreshToken = this.refreshToken = await Settings.get('oauthRefreshToken');
 
     const oauthDPoPKeypair = await Settings.get('oauthDPoPKeypair');
@@ -87,5 +78,9 @@ export class Oauth2Service {
       refreshToken,
       dpop: oauthDPoPKeypair ?? 'ES384'
     });
+
+    this.oauth2
+      .on('refresh_token', refreshToken => Settings.set('oauthRefreshToken', refreshToken))
+      .on('dpop_keypair', keypair => Settings.set('oauthDPoPKeypair', keypair));
   }
 }

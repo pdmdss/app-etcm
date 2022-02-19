@@ -2,25 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { of, Subject } from 'rxjs';
 import { concatMap, elementAt } from 'rxjs/operators';
-import { Oauth2Service } from './oauth2.service';
+import { ApiService } from '@/api/api.service';
 
 
 const endpoint = {
-  station: 'https://api.dmdata.jp/v2/parameter/earthquake/station',
   area: './assets/earthquake/area.json'
-};
-
-type ApiParametersEarthQuakeStation = {
-  items: {
-    region: { name: string; code: string; kana: string; };
-    city: { name: string; code: string; kana: string; };
-    code: string;
-    name: string;
-    kana: string;
-    status: string;
-    latitude: string;
-    longitude: string;
-  }[];
 };
 
 type ApiParametersEarthQuakeArea = {
@@ -41,8 +27,8 @@ export class StationService {
   private loading = new Subject<boolean>();
   loadingObs = this.loading.asObservable();
 
-  constructor(private http: HttpClient, private oauth2: Oauth2Service) {
-    this.requestEarthquakeStationList();
+  constructor(private http: HttpClient, private api: ApiService) {
+     this.requestEarthquakeStationList();
     this.requestEarthquakeAreasList();
     this.loadingObs.pipe(elementAt(1)).subscribe(() => this.loadingStatus = true);
   }
@@ -56,30 +42,8 @@ export class StationService {
   }
 
   private requestEarthquakeStationList(): void {
-    this.oauth2.getAuthorizationRxjs()
+    this.api.parameterEarthquakeStation()
       .pipe(
-        concatMap(token =>
-          this.oauth2.getDPoPProofJWT('GET', endpoint.station)
-            .pipe(concatMap(dpop =>
-              of([
-                  token,
-                  dpop
-                ] as [string, string | null]
-              )
-            ))
-        ),
-        concatMap(([token, dpop]) =>
-          this.http.get<ApiParametersEarthQuakeStation>(
-            endpoint.station,
-            {
-              responseType: 'json',
-              headers: {
-                authorization: token,
-                ...(dpop ? { dpop } : {})
-              }
-            }
-          ))
-        ,
         concatMap(res => {
           const map = new Map<string, [number, number]>();
 
