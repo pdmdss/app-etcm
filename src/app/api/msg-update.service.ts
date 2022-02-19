@@ -6,7 +6,7 @@ import { Zlib } from 'zlibjs/bin/gunzip.min.js';
 
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
 import { APITypes } from '@dmdata/api-types';
-import { WebSocketClient } from '@dmdata/sdk-js';
+import { WebSocketService } from '@dmdata/sdk-js';
 
 import { ApiService } from '@/api/api.service';
 
@@ -21,7 +21,7 @@ export class MsgUpdateService {
     'VXSE61'
   ];
   private nextPoolingToken?: string;
-  private webSocketSubject?: WebSocketClient;
+  private webSocketSubject?: WebSocketService;
   private webSocketStatus: null | 'connecting' | 'open' | 'closed' | 'error' = null;
   private telegramSubject?: Subject<EarthquakeInformation.Main>;
 
@@ -92,7 +92,7 @@ export class MsgUpdateService {
   }
 
   private webSocketConnection() {
-    if (this.webSocketSubject?.readyState === WebSocketClient.OPEN) {
+    if (this.webSocketSubject?.readyState === WebSocketService.OPEN) {
       return;
     }
 
@@ -102,9 +102,9 @@ export class MsgUpdateService {
 
     this.api.socketStart(['telegram.earthquake'], 'ETCM', 'json')
       .subscribe(ws => {
-        // @ts-ignore
-        this.webSocketSubject = ws.websocket;
+        this.webSocketSubject = ws;
         ws.on('data', data => s.next(data));
+        ws.on('start', () => this.webSocketStatus = 'open');
       });
 
 
