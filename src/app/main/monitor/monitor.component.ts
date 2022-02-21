@@ -22,7 +22,7 @@ export class MonitorComponent implements OnInit {
   viewEventId?: string;
   soundPlay = false;
   private eventIdSelectSubject = new Subject<string>();
-  private viewSubject = new Subject<EarthquakeInformation.Main>();
+  private viewSubject = new Subject<EarthquakeInformation.Latest.Main>();
   private sound = new Howl({ src: 'assets/sound/sound.mp3' });
 
   constructor(private api: ApiService, private msg: MsgUpdateService) {
@@ -75,7 +75,7 @@ export class MonitorComponent implements OnInit {
         concatMap(telegram => telegram ? this.api.telegramGet(telegram.id) : of<never>()),
         concatMap(data =>
           typeof data === 'object' && !(data instanceof Document) ?
-            of(data as EarthquakeInformation.Main) :
+            of(data as EarthquakeInformation.Latest.Main) :
             of<never>()
         )
       )

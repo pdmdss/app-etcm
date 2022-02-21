@@ -94,7 +94,7 @@ type EventObjectExtend = EventObject & {
 })
 export class EventViewComponent implements OnInit {
   nowEventData?: EventObjectExtend;
-  @Input() eventId?: Observable<EarthquakeInformation.Main>;
+  @Input() eventId?: Observable<EarthquakeInformation.Latest.Main>;
 
   constructor(private map: MapService, private station: StationService) {
   }
@@ -121,7 +121,7 @@ export class EventViewComponent implements OnInit {
   }
 
 
-  private view(data: EarthquakeInformation.Main): void {
+  private view(data: EarthquakeInformation.Latest.Main): void {
     if (data.infoType === '取消') {
       return;
     }
@@ -145,7 +145,9 @@ export class EventViewComponent implements OnInit {
     eventData.author = data.editorialOffice;
     eventData.dateTime = dateTime;
 
-    this.comment(data.body.comments, eventData);
+    if ('comments' in data.body) {
+      this.comment(data.body.comments, eventData);
+    }
 
     const intensity = 'intensity' in data.body ? data.body.intensity : null;
 
@@ -203,7 +205,7 @@ export class EventViewComponent implements OnInit {
     }
   }
 
-  private comment(comment: EarthquakeInformation.PublicVXSE53['body']['comments'], eventData: EventObjectExtend): void {
+  private comment(comment: EarthquakeInformation.Latest.Comments, eventData: EventObjectExtend): void {
     const varComment = comment.var;
     const forecastComment = comment.forecast;
     const freeFormComment = comment.free;
@@ -223,8 +225,8 @@ export class EventViewComponent implements OnInit {
   private intensity(item: {
                       name: string;
                       code: string;
-                      int?: EarthquakeInformation.Intensity | '!5-';
-                      maxInt?: EarthquakeInformation.Intensity | '!5-';
+                      int?: EarthquakeInformation.Latest.IntensityClass | '!5-';
+                      maxInt?: EarthquakeInformation.Latest.IntensityClass | '!5-';
                       revise?: '上方修正' | '追加';
                       condition?: '震度５弱以上未入電';
                     },
