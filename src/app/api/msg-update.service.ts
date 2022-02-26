@@ -23,7 +23,7 @@ export class MsgUpdateService {
   private nextPoolingToken?: string;
   private webSocketSubject?: WebSocketService;
   private webSocketStatus: null | 'connecting' | 'open' | 'closed' | 'error' = null;
-  private telegramSubject?: Subject<EarthquakeInformation.Main>;
+  private telegramSubject?: Subject<EarthquakeInformation.Latest.Main>;
 
   constructor(private api: ApiService) {
   }
@@ -53,7 +53,7 @@ export class MsgUpdateService {
           this.telegramTypes.includes(item.head.type) &&
           item.format === 'json' && item.encoding === 'base64'
         ),
-        concatMap(item => of(unzip(item.body) as EarthquakeInformation.Main))
+        concatMap(item => of(unzip(item.body) as EarthquakeInformation.Latest.Main))
       )
       .subscribe(data => this.telegramSubject?.next(data));
   }
@@ -84,7 +84,7 @@ export class MsgUpdateService {
         concatMap(item => this.api.telegramGet(item.id)),
         concatMap(data =>
           typeof data === 'object' && !(data instanceof Document) ?
-            of(data as EarthquakeInformation.Main) :
+            of(data as EarthquakeInformation.Latest.Main) :
             of<never>()
         )
       )
