@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { concatMap, last, share } from 'rxjs/operators';
+import { concatMap, filter, last, share } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { Howl } from 'howler';
 
@@ -7,10 +7,12 @@ import { EarthquakeInformation } from '@dmdata/telegram-json-types';
 
 import { ApiService } from '@/api/api.service';
 import { MsgUpdateService } from '@/api/msg-update.service';
-import { earthquakeEventAdd, earthquakeEvents, EventObject } from '@/main/monitor/event';
+import { EarthquakeDataset, EarthquakeEvent } from '@/main/monitor/event';
 
 import pack from '@/package';
 import { Settings } from '@/db/settings';
+import { MatDialog } from '@angular/material/dialog';
+import { EventHistoryComponent } from '@/main/monitor/event-history/event-history.component';
 
 @Component({
   selector: 'app-monitor',
@@ -21,11 +23,12 @@ export class MonitorComponent implements OnInit {
   package = pack;
   viewEventId?: string;
   soundPlay = false;
+  private eventIdList: string[] = [];
   private eventIdSelectSubject = new Subject<string>();
   private viewSubject = new Subject<EarthquakeInformation.Latest.Main>();
   private sound = new Howl({ src: 'assets/sound/sound.mp3' });
 
-  constructor(private api: ApiService, private msg: MsgUpdateService) {
+  constructor(private dialog: MatDialog, private api: ApiService, private msg: MsgUpdateService) {
   }
 
   webSocketStatus() {
@@ -53,16 +56,10 @@ export class MonitorComponent implements OnInit {
     const list = this.api.gdEarthquakeList({ limit: 100 })
       .pipe(concatMap(row => of(...row.items.reverse())), share());
 
-    list.subscribe(item => earthquakeEventAdd({
-      eventId: item.eventId,
-      arrivalTime: item.arrivalTime,
-      originTime: item.originTime,
-      hypocenter: item.hypocenter?.name,
-      depth: item.hypocenter?.depth,
-      coordinate: item.hypocenter?.coordinate,
-      magnitude: item.magnitude,
-      maxInt: item.maxInt
-    }));
+    list.subscribe(item => {
+      EarthquakeDataset.set(item);
+      this.eventIdList.push(item.eventId);
+    });
 
     list
       .pipe(last())
@@ -81,7 +78,10 @@ export class MonitorComponent implements OnInit {
       )
       .subscribe(data => this.viewSubject.next(data));
 
-    this.viewSubject.subscribe(data => this.viewEventId = data.eventId);
+    this.viewSubject.subscribe(data => {
+      this.viewEventId = data.eventId;
+      this.oldDatasetDelete();
+    });
 
     this.msg.newTelegrams()
       .pipe(concatMap(data => data.infoType !== '取消' ? of(data) : of<never>()))
@@ -92,16 +92,21 @@ export class MonitorComponent implements OnInit {
           this.sound.play();
         }
 
-        earthquakeEventAdd({
+        EarthquakeDataset.set({
           eventId: data.eventId,
           arrivalTime: earthquake?.arrivalTime ?? data.targetDateTime,
           originTime: earthquake?.originTime,
-          hypocenter: earthquake?.hypocenter.name,
-          depth: earthquake?.hypocenter?.depth,
-          coordinate: earthquake?.hypocenter?.coordinate,
+          hypocenter: earthquake?.hypocenter,
           magnitude: earthquake?.magnitude,
-          maxInt: 'intensity' in data.body ? data.body.intensity?.maxInt : null
+          maxInt: 'intensity' in data.body ? data.body.intensity?.maxInt : undefined,
+          maxLpgmInt: undefined
         });
+        if (!this.eventIdList.includes(data.eventId)) {
+          this.eventIdList.push(data.eventId);
+        }
+        if (this.eventIdList.length > 100) {
+          this.eventIdList.shift();
+        }
 
         if (data._schema.type === 'earthquake-information') {
           this.viewSubject.next(data);
@@ -113,9 +118,20 @@ export class MonitorComponent implements OnInit {
     this.sound.on('unlock', () => this.soundUnlock());
   }
 
+  panelOpen(name: string) {
+    if (name === 'earthquake-history') {
+      const dialogRef = this.dialog.open(EventHistoryComponent);
 
-  eventList(): EventObject[] {
-    return [...earthquakeEvents].map(r => r[1]).reverse();
+      dialogRef.afterClosed()
+        .pipe(filter(result => typeof result === 'string' && result.length === 14))
+        .subscribe((eventId: string) => this.toEvent(eventId));
+    }
+  }
+
+  eventList() {
+    return this.eventIdList.reverse()
+      .map(eventId => EarthquakeDataset.get(eventId))
+      .filter(event => event) as EarthquakeEvent[];
   }
 
   toEvent(eventId: string) {
@@ -144,6 +160,14 @@ export class MonitorComponent implements OnInit {
 
     if (this.sound.state() === 'loaded') {
       this.soundPlay = spAa ?? false;
+    }
+  }
+
+  private oldDatasetDelete() {
+    for (const datasetEventId of EarthquakeDataset.eventIds()) {
+      if (!this.eventIdList.includes(datasetEventId) && this.viewEventId !== datasetEventId) {
+        EarthquakeDataset.delete(datasetEventId);
+      }
     }
   }
 }

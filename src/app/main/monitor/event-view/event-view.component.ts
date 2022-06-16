@@ -5,7 +5,7 @@ import { icon, Icon, LatLngBounds, latLngBounds, Layer, marker } from 'leaflet';
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
 import { StationService } from '@/api/station.service';
 import { MapService } from '@/main/monitor/map/map.service';
-import { earthquakeEvents, EventObject } from '@/main/monitor/event';
+import { EarthquakeDataset, EarthquakeEvent } from '@/main/monitor/event';
 
 const seismicIcon = new Map<number, Icon>();
 const hypocenterIcon = icon({
@@ -72,7 +72,7 @@ const intensityInitMap: () => [string, string[]][] = () => [
   ]
 ];
 
-type EventObjectExtend = EventObject & {
+type EventObjectExtend = EarthquakeEvent & {
   dateTime?: string;
   author?: string;
   comment?: {
@@ -94,14 +94,13 @@ type EventObjectExtend = EventObject & {
 })
 export class EventViewComponent implements OnInit {
   nowEventData?: EventObjectExtend;
-  @Input() eventId?: Observable<EarthquakeInformation.Latest.Main>;
+  @Input() eventData?: Observable<EarthquakeInformation.Latest.Main>;
 
   constructor(private map: MapService, private station: StationService) {
   }
 
   ngOnInit(): void {
-    this.eventId?.subscribe(data => this.view(data));
-
+    this.eventData?.subscribe(data => this.view(data));
   }
 
   private mapClearLayerEarthquake(): void {
@@ -129,13 +128,13 @@ export class EventViewComponent implements OnInit {
     const title = data.title;
     const dateTime = data.pressDateTime;
     const eventId = data.eventId;
-    const eventData: EventObjectExtend | undefined = earthquakeEvents.get(eventId);
+    const eventData: EventObjectExtend | undefined = EarthquakeDataset.get(eventId);
 
     if (!eventId || !dateTime || !eventData) {
       return;
     }
 
-    if (this.nowEventData?.eventId !== eventData.eventId) {
+    if (this.nowEventData?.eventId !== eventId) {
       this.mapClearLayerEarthquake();
       this.mapClearPointEarthquake();
     }
@@ -153,7 +152,7 @@ export class EventViewComponent implements OnInit {
 
     const bounds = eventData.bounds ??= latLngBounds([]);
 
-    const coordinate = eventData.coordinate;
+    const coordinate = eventData.hypocenter?.coordinate;
 
     if (coordinate && coordinate.latitude && coordinate.longitude) {
       this.mapClearLayerEarthquake();

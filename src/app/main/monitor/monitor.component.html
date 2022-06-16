@@ -1,20 +1,38 @@
 <div class="monitor">
     <div class="earthquake">
         <div class="event-list">
+            <div class="event-header">
+                <h3>地震情報履歴（100件）</h3>
+            </div>
             <ul>
                 <li *ngFor="let row of eventList()"
                     (click)="toEvent(row.eventId)"
-                    class="intensity-s{{row.maxInt}}"
+                    class="intensity-s{{row.maxInt | intColor}}"
                     [class.view-event]="row.eventId === viewEventId">
                     <div class="event-time">{{(row.originTime || row.arrivalTime)| date:'MM/dd HH:mm'}}</div>
-                    <div class="event-maxint">最大震度 <span>{{row.maxIntText || '-'}}</span></div>
-                    <div class="event-region">{{row.hypocenterName || '震源不明'}} {{row.depth}}</div>
-                    <div class="event-magnitude">{{row.magnitude || 'M不明'}}</div>
+                    <div class="event-maxint">最大震度 <span>{{row.maxInt || '-'}}</span></div>
+                    <div class="event-region">
+                        <span>{{row.hypocenter?.name || '震源不明'}}</span>
+                        <span>&nbsp;</span>
+                        <span *ngIf="row.hypocenter?.depth?.condition; else depthElseValue">{{row.hypocenter?.depth?.condition}}</span>
+                        <ng-template #depthElseValue>
+                            <span *ngIf="row.hypocenter?.depth?.value; else depthElseUnknown">{{row.hypocenter?.depth?.value}}
+                                km</span>
+                        </ng-template>
+                        <ng-template #depthElseUnknown>不明</ng-template>
+                    </div>
+                    <div class="event-magnitude">
+                        <span *ngIf="row.magnitude?.condition; else magElseValue">{{row.magnitude?.condition}}</span>
+                        <ng-template #magElseValue>
+                            <span *ngIf="row.magnitude?.value; else magElseUnknown">M {{row.magnitude?.value}}</span>
+                        </ng-template>
+                        <ng-template #magElseUnknown>M不明</ng-template>
+                    </div>
                 </li>
             </ul>
         </div>
         <div class="event-data">
-            <app-event-view [eventId]="selectEvent()"></app-event-view>
+            <app-event-view [eventData]="selectEvent()"></app-event-view>
         </div>
     </div>
     <div class="settings">
@@ -29,6 +47,9 @@
                 <span>音声通知:</span>
                 <input type="checkbox" [checked]="soundPlay" (input)="soundPlaySetting($event)">
             </label>
+        </div>
+        <div class="panes">
+            <div (click)="panelOpen('earthquake-history')" class="panel">地震情報検索</div>
         </div>
         <div class="spacer"></div>
         <div class="package">

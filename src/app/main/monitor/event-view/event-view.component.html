@@ -1,24 +1,42 @@
 <div class="earthquake-main-data">
     <div class="event-data">
         <ng-container *ngIf="nowEventData">
-            <div class="event-data-head intensity-s{{nowEventData.maxInt}}">
+            <div class="event-data-head intensity-s{{nowEventData.maxInt | intColor}}">
                 <h2>地震情報</h2>
                 <br>
                 <div class="event-time">
-                    {{(nowEventData.originTime || nowEventData.arrivalTime) | date:'MM月dd日HH時mm分'}} 頃発生
+                    <ng-container *ngIf="nowEventData.originTime">{{nowEventData.originTime | date: 'MM月dd日hh時mm分'}}
+                        頃発生
+                    </ng-container>
+                    <ng-container *ngIf="!nowEventData.originTime">{{nowEventData.arrivalTime | date: 'MM月dd日hh時mm分'}}
+                        頃検知
+                    </ng-container>
                 </div>
                 <div class="event-maxint">
-                    最大震度&nbsp;&nbsp;<span>{{nowEventData.maxIntText || '-'}}</span>
+                    最大震度&nbsp;&nbsp;<span>{{nowEventData.maxInt || '-'}}</span>
                 </div>
                 <br>
                 <div class="event-region">
-                    震源&nbsp;&nbsp;{{nowEventData.hypocenterName}}
+                    震源&nbsp;&nbsp;{{nowEventData.hypocenter?.name}}
                 </div>
                 <div class="event-depth">
-                    深さ&nbsp;&nbsp;{{nowEventData.depth || '不明'}}
+                    <span>深さ</span>
+                    <span>&nbsp;&nbsp;</span>
+                    <span *ngIf="nowEventData.hypocenter?.depth?.condition; else depthElseValue">{{nowEventData.hypocenter?.depth?.condition}}</span>
+                    <ng-template #depthElseValue>
+                        <span *ngIf="nowEventData.hypocenter?.depth?.value; else depthElseUnknown">{{nowEventData.hypocenter?.depth?.value}}
+                            km</span>
+                    </ng-template>
+                    <ng-template #depthElseUnknown>不明</ng-template>
                 </div>
                 <div class="event-magnitude">
-                    規模&nbsp;&nbsp;{{nowEventData.magnitude || '不明'}}
+                    <span>規模</span>
+                    <span>&nbsp;&nbsp;</span>
+                    <span *ngIf="nowEventData.magnitude?.condition; else magElseValue">{{nowEventData.magnitude?.condition}}</span>
+                    <ng-template #magElseValue>
+                        <span *ngIf="nowEventData.magnitude?.value; else magElseUnknown">M {{nowEventData.magnitude?.value}}</span>
+                    </ng-template>
+                    <ng-template #magElseUnknown>M不明</ng-template>
                 </div>
             </div>
             <div class="event-data-body">
