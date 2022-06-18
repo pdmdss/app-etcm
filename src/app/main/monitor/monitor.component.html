@@ -13,13 +13,15 @@
                     <div class="event-maxint">最大震度 <span>{{row.maxInt || '-'}}</span></div>
                     <div class="event-region">
                         <span>{{row.hypocenter?.name || '震源不明'}}</span>
-                        <span>&nbsp;</span>
-                        <span *ngIf="row.hypocenter?.depth?.condition; else depthElseValue">{{row.hypocenter?.depth?.condition}}</span>
-                        <ng-template #depthElseValue>
+                        <ng-container *ngIf="row.maxInt || row.hypocenter?.depth?.condition !== '不明'">
+                            <span>&nbsp;</span>
+                            <span *ngIf="row.hypocenter?.depth?.condition; else depthElseValue">{{row.hypocenter?.depth?.condition}}</span>
+                            <ng-template #depthElseValue>
                             <span *ngIf="row.hypocenter?.depth?.value; else depthElseUnknown">{{row.hypocenter?.depth?.value}}
                                 km</span>
-                        </ng-template>
-                        <ng-template #depthElseUnknown>不明</ng-template>
+                            </ng-template>
+                            <ng-template #depthElseUnknown>不明</ng-template>
+                        </ng-container>
                     </div>
                     <div class="event-magnitude">
                         <span *ngIf="row.magnitude?.condition; else magElseValue">{{row.magnitude?.condition}}</span>
