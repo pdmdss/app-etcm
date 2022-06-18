@@ -61,4 +61,7 @@
     <div class="event-map">
         <app-map></app-map>
     </div>
+    <div *ngIf="nowEventData?.latestInformation === false" class="history-information">
+        過去情報
+    </div>
 </div>

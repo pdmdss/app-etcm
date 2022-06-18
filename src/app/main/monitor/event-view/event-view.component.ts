@@ -84,7 +84,8 @@ type EventObjectExtend = EarthquakeEvent & {
     area?: [string, string[]][];
     city?: [string, string[]][]
   };
-  bounds?: LatLngBounds
+  bounds?: LatLngBounds,
+  latestInformation?: boolean;
 };
 
 @Component({
@@ -94,13 +95,13 @@ type EventObjectExtend = EarthquakeEvent & {
 })
 export class EventViewComponent implements OnInit {
   nowEventData?: EventObjectExtend;
-  @Input() eventData?: Observable<EarthquakeInformation.Latest.Main>;
+  @Input() eventData?: Observable<{ data: EarthquakeInformation.Latest.Main; latestInformation: boolean; }>;
 
   constructor(private map: MapService, private station: StationService) {
   }
 
   ngOnInit(): void {
-    this.eventData?.subscribe(data => this.view(data));
+    this.eventData?.subscribe(event => this.view(event.data, event.latestInformation));
   }
 
   private mapClearLayerEarthquake(): void {
@@ -120,7 +121,7 @@ export class EventViewComponent implements OnInit {
   }
 
 
-  private view(data: EarthquakeInformation.Latest.Main): void {
+  private view(data: EarthquakeInformation.Latest.Main, latestInformation: boolean): void {
     if (data.infoType === '取消') {
       return;
     }
@@ -140,6 +141,8 @@ export class EventViewComponent implements OnInit {
     }
 
     this.nowEventData = eventData;
+
+    eventData.latestInformation = latestInformation;
 
     eventData.author = data.editorialOffice;
     eventData.dateTime = dateTime;

@@ -18,18 +18,18 @@
     min-height: 238px;
     padding: 5px 0;
 
-h2 {
-    text-align: center;
-}
+    h2 {
+        text-align: center;
+    }
 
-> div {
-    font-size: 18px;
-    margin: 0 25px;
-}
+    > div {
+        font-size: 18px;
+        margin: 0 25px;
+    }
 
-.event-maxint span {
-    font-size: 24px;
-}
+    .event-maxint span {
+        font-size: 24px;
+    }
 }
 
 .event-data-body {
@@ -57,11 +57,11 @@ h2 {
     border-top: 1px solid #cdcdcd;
     border-bottom: 1px solid #cdcdcd;
 
-p {
-    font-size: 11px;
-    padding: 5px;
-    white-space: pre-line;
-}
+    p {
+        font-size: 11px;
+        padding: 5px;
+        white-space: pre-line;
+    }
 }
 
 .event-list {
@@ -71,9 +71,9 @@ p {
     border-top: 1px solid #cdcdcd;
     border-bottom: 1px solid #cdcdcd;
 
-p {
-    font-size: 12px;
-}
+    p {
+        font-size: 12px;
+    }
 }
 
 .event-data-meta {
@@ -84,6 +84,7 @@ p {
 
 .event-map {
     position: relative;
+    z-index: 5;
     flex: 1;
 }
 
@@ -96,14 +97,27 @@ p {
     text-align: center;
 
 
-p {
-    font-size: 20px;
-    width: fit-content;
-    margin: auto;
-    padding: 5px 25px;
-    color: #e7e7e7;
-    border: 2px solid #f8f8f8;
-    border-radius: 5px;
-    background-color: #181719;
+    p {
+        font-size: 20px;
+        width: fit-content;
+        margin: auto;
+        padding: 5px 25px;
+        color: #e7e7e7;
+        border: 2px solid #f8f8f8;
+        border-radius: 5px;
+        background-color: #181719;
+    }
 }
+
+
+.history-information {
+    font-size: 20px;
+    position: absolute;
+    z-index: 6;
+    right: 0;
+    margin: 20px;
+    padding: 10px;
+    color: #ffffff;
+    border-radius: 5px;
+    background-color: #5c5f66;
 }

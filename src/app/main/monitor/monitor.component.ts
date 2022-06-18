@@ -24,8 +24,8 @@ export class MonitorComponent implements OnInit {
   viewEventId?: string;
   soundPlay = false;
   private eventIdList: string[] = [];
-  private eventIdSelectSubject = new Subject<string>();
-  private viewSubject = new Subject<EarthquakeInformation.Latest.Main>();
+  private eventIdSelectSubject = new Subject<{ eventId: string; latestInformation: boolean; }>();
+  private viewSubject = new Subject<{ data: EarthquakeInformation.Latest.Main; latestInformation: boolean; }>();
   private sound = new Howl({ src: 'assets/sound/sound.mp3' });
 
   constructor(private dialog: MatDialog, private api: ApiService, private msg: MsgUpdateService) {
@@ -63,22 +63,32 @@ export class MonitorComponent implements OnInit {
 
     list
       .pipe(last())
-      .subscribe(event => this.eventIdSelectSubject.next(event.eventId));
+      .subscribe(event => this.eventIdSelectSubject.next({
+        eventId: event.eventId,
+        latestInformation: true
+      }));
 
     this.eventIdSelectSubject
       .pipe(
-        concatMap(eventId => this.api.gdEarthquakeEvent(eventId)),
-        concatMap(event => of(event.event.telegrams.find(telegram => /^VXSE5[1-3]$/.test(telegram.head.type)))),
-        concatMap(telegram => telegram ? this.api.telegramGet(telegram.id) : of<never>()),
-        concatMap(data =>
-          typeof data === 'object' && !(data instanceof Document) ?
-            of(data as EarthquakeInformation.Latest.Main) :
-            of<never>()
+        concatMap(event =>
+          this.api.gdEarthquakeEvent(event.eventId)
+            .pipe(
+              concatMap(event => of(event.event.telegrams.find(telegram => /^VXSE5[1-3]$/.test(telegram.head.type)))),
+              concatMap(telegram => telegram ? this.api.telegramGet(telegram.id) : of<never>()),
+              concatMap(data =>
+                typeof data === 'object' && !(data instanceof Document) ?
+                  of({
+                    data: data as EarthquakeInformation.Latest.Main,
+                    latestInformation: event.latestInformation
+                  }) :
+                  of<never>()
+              )
+            )
         )
       )
-      .subscribe(data => this.viewSubject.next(data));
+      .subscribe(value => this.viewSubject.next(value));
 
-    this.viewSubject.subscribe(data => {
+    this.viewSubject.subscribe(({ data }) => {
       this.viewEventId = data.eventId;
       this.oldDatasetDelete();
     });
@@ -109,7 +119,10 @@ export class MonitorComponent implements OnInit {
         }
 
         if (data._schema.type === 'earthquake-information') {
-          this.viewSubject.next(data);
+          this.viewSubject.next({
+            data,
+            latestInformation: true
+          });
         } else {
           this.toEvent(data.eventId);
         }
@@ -139,7 +152,10 @@ export class MonitorComponent implements OnInit {
       return;
     }
 
-    this.eventIdSelectSubject.next(eventId);
+    this.eventIdSelectSubject.next({
+      eventId,
+      latestInformation: this.eventIdList.indexOf(eventId) === (this.eventIdList.length - 1)
+    });
   }
 
   selectEvent() {
