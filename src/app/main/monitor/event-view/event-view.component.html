@@ -17,7 +17,7 @@
                 </div>
                 <br>
                 <div class="event-region">
-                    震源&nbsp;&nbsp;{{nowEventData.hypocenter?.name}}
+                    震源&nbsp;&nbsp;{{nowEventData.hypocenter?.name || '震源不明'}}
                 </div>
                 <div *ngIf="nowEventData.maxInt || nowEventData.hypocenter?.depth?.condition !== '不明'"
                      class="event-depth">
