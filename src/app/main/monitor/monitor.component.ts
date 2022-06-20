@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { concatMap, filter, last, share } from 'rxjs/operators';
-import { of, Subject } from 'rxjs';
+import { NEVER, of, Subject } from 'rxjs';
 import { Howl } from 'howler';
 
 import { EarthquakeInformation } from '@dmdata/telegram-json-types';
@@ -74,14 +74,14 @@ export class MonitorComponent implements OnInit {
           this.api.gdEarthquakeEvent(event.eventId)
             .pipe(
               concatMap(event => of(event.event.telegrams.find(telegram => /^VXSE5[1-3]$/.test(telegram.head.type)))),
-              concatMap(telegram => telegram ? this.api.telegramGet(telegram.id) : of<never>()),
+              concatMap(telegram => telegram ? this.api.telegramGet(telegram.id) : NEVER),
               concatMap(data =>
                 typeof data === 'object' && !(data instanceof Document) ?
                   of({
                     data: data as EarthquakeInformation.Latest.Main,
                     latestInformation: event.latestInformation
                   }) :
-                  of<never>()
+                  NEVER
               )
             )
         )
@@ -94,7 +94,7 @@ export class MonitorComponent implements OnInit {
     });
 
     this.msg.newTelegrams()
-      .pipe(concatMap(data => data.infoType !== '取消' ? of(data) : of<never>()))
+      .pipe(concatMap(data => data.infoType !== '取消' ? of(data) : NEVER))
       .subscribe(data => {
         const earthquake = 'earthquake' in data.body ? data.body.earthquake : null;
 

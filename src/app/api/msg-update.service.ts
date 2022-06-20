@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { interval, of, Subject } from 'rxjs';
+import { interval, NEVER, of, Subject } from 'rxjs';
 import { concatMap, distinct, filter, skip, tap } from 'rxjs/operators';
 // @ts-ignore
 import { Zlib } from 'zlibjs/bin/gunzip.min.js';
@@ -85,7 +85,7 @@ export class MsgUpdateService {
         concatMap(data =>
           typeof data === 'object' && !(data instanceof Document) ?
             of(data as EarthquakeInformation.Latest.Main) :
-            of<never>()
+            NEVER
         )
       )
       .subscribe(data => this.telegramSubject?.next(data));
