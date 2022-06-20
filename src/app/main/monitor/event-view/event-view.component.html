@@ -5,10 +5,10 @@
                 <h2>地震情報</h2>
                 <br>
                 <div class="event-time">
-                    <ng-container *ngIf="nowEventData.originTime">{{nowEventData.originTime | date: 'MM月dd日hh時mm分'}}
+                    <ng-container *ngIf="nowEventData.originTime">{{nowEventData.originTime | date: 'MM月dd日HH時mm分'}}
                         頃発生
                     </ng-container>
-                    <ng-container *ngIf="!nowEventData.originTime">{{nowEventData.arrivalTime | date: 'MM月dd日hh時mm分'}}
+                    <ng-container *ngIf="!nowEventData.originTime">{{nowEventData.arrivalTime | date: 'MM月dd日HH時mm分'}}
                         頃検知
                     </ng-container>
                 </div>

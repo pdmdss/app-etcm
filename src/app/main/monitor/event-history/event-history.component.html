@@ -33,8 +33,8 @@
     <div class="history">
         <table *ngIf="historyStatus === 'ok'">
             <tr (click)="toSelectEvent(row.eventId)" *ngFor="let row of historyItems">
-                <td *ngIf="row.originTime">{{row.originTime | date: 'yyyy年MM月dd日hh時mm分'}}頃発生</td>
-                <td *ngIf="!row.originTime">{{row.arrivalTime | date: 'yyyy年MM月dd日hh時mm分'}}頃検知</td>
+                <td *ngIf="row.originTime">{{row.originTime | date: 'yyyy年MM月dd日HH時mm分'}}頃発生</td>
+                <td *ngIf="!row.originTime">{{row.arrivalTime | date: 'yyyy年MM月dd日HH時mm分'}}頃検知</td>
                 <td>{{row.hypocenter?.name || '-'}}</td>
                 <td>
                     <ng-container *ngIf="row.hypocenter?.depth?.condition">
