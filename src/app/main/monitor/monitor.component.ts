@@ -142,7 +142,7 @@ export class MonitorComponent implements OnInit {
   }
 
   eventList() {
-    return this.eventIdList.reverse()
+    return [...this.eventIdList].reverse()
       .map(eventId => EarthquakeDataset.get(eventId))
       .filter(event => event) as EarthquakeEvent[];
   }
