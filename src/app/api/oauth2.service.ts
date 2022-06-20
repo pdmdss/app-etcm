@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-
 import { OAuth2Code } from '@dmdata/oauth2-client';
+import { from, interval, Observable, take, tap } from 'rxjs';
+import { concatMap, filter } from 'rxjs/operators';
 
 import { Settings } from '@/db/settings';
 
 import { environment } from '../../environments/environment';
-import { from, interval, Observable, take, tap } from 'rxjs';
-import { concatMap, filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -51,9 +50,9 @@ export class Oauth2Service {
   }
 
   async init() {
-    const refreshToken = this.refreshToken = await Settings.get('oauthRefreshToken');
+    const refreshToken = Settings.get('oauthRefreshToken');
 
-    const oauthDPoPKeypair = await Settings.get('oauthDPoPKeypair');
+    const oauthDPoPKeypair = Settings.get('oauthDPoPKeypair').then(res => res ? res : 'ES384');
 
     this.oauth2 = new OAuth2Code({
       endpoint: {
@@ -76,8 +75,10 @@ export class Oauth2Service {
       },
       pkce: true,
       refreshToken,
-      dpop: oauthDPoPKeypair ?? 'ES384'
+      dpop: oauthDPoPKeypair
     });
+
+    this.refreshToken = await refreshToken;
 
     this.oauth2
       .on('refresh_token', refreshToken => Settings.set('oauthRefreshToken', refreshToken))

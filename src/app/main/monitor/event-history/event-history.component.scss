@@ -1,0 +1,80 @@
+@import "../intensity-color.scss";
+
+.panel {
+    position: absolute;
+    z-index: 1000;
+    top: max(10%, 50px);
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+    max-width: 100vw;
+    height: 500px;
+    min-height: 100px;
+    max-height: max-content;
+    transform: translate(-50%, 0);
+    border: 1px solid #000000;
+    background-color: #e0e0e0;
+}
+
+.panel-hidden {
+    display: none;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    background-color: #a0b1d6;
+
+    h3 {
+        font-size: 16px;
+        font-weight: normal;
+        margin: 0 16px;
+        padding: 3px;
+    }
+
+    .header-span {
+        flex-grow: 1;
+    }
+
+    .panel-close {
+        padding: 0 10px;
+        cursor: pointer;
+        background-color: #d3d3d3;
+
+        mat-icon {
+            line-height: 30px;
+        }
+    }
+}
+
+.search {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+
+    .search-input {
+        margin: 0 5px;
+    }
+}
+
+.history {
+    overflow-y: scroll;
+    flex: 1;
+
+    table {
+        width: 100%;
+        border-spacing: 0
+    }
+
+    .max-intensity {
+        min-width: 24px;
+        text-align: center;
+    }
+
+    tr:hover {
+        cursor: pointer;
+        background-color: #ffffff;
+    }
+}

@@ -1,0 +1,65 @@
+<div class="panel">
+    <div class="header">
+        <h3>地震情報履歴検索</h3>
+        <div class="header-span"></div>
+        <div (click)="panelClose()" class="panel-close">
+            <mat-icon>close</mat-icon>
+        </div>
+    </div>
+    <div class="search">
+        <div class="search-input">
+            <input (input)="setSearch('start_date', $event)" type="date">
+            <span> ~ </span>
+            <input (input)="setSearch('end_date', $event)" type="date">
+        </div>
+        <div class="search-input">
+            <select (input)="setSearch('max_int', $event)">
+                <option value="">-</option>
+                <option value="1">震度1以上</option>
+                <option value="2">震度2以上</option>
+                <option value="3">震度3以上</option>
+                <option value="4">震度4以上</option>
+                <option value="5-">震度5弱以上</option>
+                <option value="5+">震度5強以上</option>
+                <option value="6-">震度6弱以上</option>
+                <option value="6+">震度6強以上</option>
+                <option value="7">震度7</option>
+            </select>
+        </div>
+        <div class="search-input">
+            <input (click)="search()" type="button" value="検索">
+        </div>
+    </div>
+    <div class="history">
+        <table *ngIf="historyStatus === 'ok'">
+            <tr (click)="toSelectEvent(row.eventId)" *ngFor="let row of historyItems">
+                <td *ngIf="row.originTime">{{row.originTime | date: 'yyyy年MM月dd日HH時mm分'}}頃発生</td>
+                <td *ngIf="!row.originTime">{{row.arrivalTime | date: 'yyyy年MM月dd日HH時mm分'}}頃検知</td>
+                <td>{{row.hypocenter?.name || '-'}}</td>
+                <td>
+                    <ng-container *ngIf="row.hypocenter?.depth?.condition">
+                        {{row.hypocenter?.depth?.condition}}
+                    </ng-container>
+                    <ng-container *ngIf="!row.hypocenter?.depth?.condition && row.hypocenter?.depth?.value">
+                        {{row.hypocenter?.depth?.value}}km
+                    </ng-container>
+                    <ng-container *ngIf="!row.hypocenter?.depth">
+                        -
+                    </ng-container>
+                </td>
+                <td>
+                    <ng-container *ngIf="row.magnitude?.condition">
+                        {{row.magnitude?.condition}}
+                    </ng-container>
+                    <ng-container *ngIf="!row.magnitude?.condition && row.magnitude?.value">
+                        M{{row.magnitude?.value}}
+                    </ng-container>
+                    <ng-container *ngIf="!row.magnitude">
+                        -
+                    </ng-container>
+                </td>
+                <td class="max-intensity intensity-s{{row.maxInt | intColor}}">{{row.maxInt || '-'}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

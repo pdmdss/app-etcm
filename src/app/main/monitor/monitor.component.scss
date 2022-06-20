@@ -95,6 +95,22 @@
     }
 }
 
+.panes {
+    display: flex;
+    flex-direction: row;
+    margin: 0 5px;
+
+    .panel {
+        line-height: normal;
+        margin: auto 2px;
+        padding: 0 2px;
+        cursor: pointer;
+        border: 1px solid #063e7c;
+        border-radius: 3px;
+        background-color: #1c528d;
+    }
+}
+
 .earthquake {
     z-index: 5;
     display: flex;
@@ -104,11 +120,24 @@
     margin: 0;
 }
 
+
 .event-list {
+    display: flex;
+    flex-direction: column;
     min-width: 260px;
     max-width: 260px;
     margin: 0;
     padding: 0;
+
+    .event-header {
+        padding: 5px 0;
+        background-color: #bcd4ee;
+
+        h3 {
+            font-size: 16px;
+            text-align: center;
+        }
+    }
 
     ul {
         overflow-x: unset;
