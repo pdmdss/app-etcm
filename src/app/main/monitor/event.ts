@@ -10,7 +10,31 @@ export class EarthquakeDataset {
   }
 
   static set(event: EarthquakeEvent) {
-    this.events.set(event.eventId, event);
+    const ev = this.get(event.eventId) ?? event;
+
+    if (event.originTime) {
+      ev.originTime = event.originTime;
+    }
+    if (event.arrivalTime) {
+      ev.arrivalTime = event.arrivalTime;
+    }
+    if (event.hypocenter) {
+      ev.hypocenter = event.hypocenter;
+    }
+    if (event.magnitude) {
+      ev.magnitude = event.magnitude;
+    }
+    if (event.maxInt) {
+      ev.maxInt = event.maxInt;
+    }
+    if (event.maxInt) {
+      ev.maxInt = event.maxInt;
+    }
+    if (event.maxLpgmInt) {
+      ev.maxLpgmInt = event.maxLpgmInt;
+    }
+
+    this.events.set(event.eventId, ev);
   }
 
   static delete(eventId: string) {
