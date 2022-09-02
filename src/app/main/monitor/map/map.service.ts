@@ -72,7 +72,7 @@ export class MapService {
       group.addTo(this.map);
     }
 
-    const gridPref = (L as any).vectorGrid.protobuf('https://svir.jp/map/tile/prefectures/{z}/{x}/{y}.pbf', {
+    const gridPref = (L as any).vectorGrid.protobuf('https://soshi1822.jp/map/tile/prefectures/{z}/{x}/{y}.pbf', {
       maxNativeZoom: 12,
       minNativeZoom: 2,
       rendererFactory: (L as any).canvas.tile,
@@ -88,7 +88,7 @@ export class MapService {
     });
 
     const gridWorld = (L as any).vectorGrid.protobuf(
-      'https://svir.jp/map/tile/world/{z}/{x}/{y}.pbf',
+      'https://soshi1822.jp/map/tile/world/{z}/{x}/{y}.pbf',
       {
         zIndex: 4,
         maxNativeZoom: 10,
